@@ -1,0 +1,17 @@
+version: '3'
+services:
+  ruby:
+    build:
+      dockerfile: ./Dockerfile.test
+      context: .
+    environment:
+      - "CLICKHOUSE_HOSTS=clickhouse:8123"
+      - "CLICKHOUSE_USER=default"
+      - "CLICKHOUSE_ENV=test"
+    command: tail -f /dev/null
+    volumes:
+      - ./:/app
+    links:
+      - "clickhouse:clickhouse"
+  clickhouse:
+    image: yandex/clickhouse-server
