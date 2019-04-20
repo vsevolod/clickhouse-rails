@@ -1,4 +1,4 @@
-require 'spec_helper.rb'
+require_relative 'rails_helper'
 
 describe Clickhouse::Rails::Config do
   describe '.init' do

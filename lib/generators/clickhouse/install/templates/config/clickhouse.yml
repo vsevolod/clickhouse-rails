@@ -1,0 +1,3 @@
+development:
+  hosts: <%= ENV.fetch('CLICKHOUSE_HOSTS', 'localhost:8123') %>
+  username: <%= ENV.fetch('CLICKHOUSE_USER', 'default') %>
