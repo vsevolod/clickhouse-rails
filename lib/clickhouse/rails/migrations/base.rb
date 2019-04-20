@@ -11,51 +11,66 @@ module Clickhouse
             @migrations_list ||= []
             @migrations_list.push(child)
           end
-        end
 
-        def self.run
-          @migrations_list.each do |migration|
-            migration.up
-            migration.add_version
+          def run_up
+            return unless @migrations_list
+
+            @migrations_list.each do |migration|
+              migration.up
+              migration.add_version
+            end
           end
-        end
 
-        def self.up; end
+          def up; end
 
-        def self.add_version
-          Clickhouse.connection.insert_rows(MIGRATION_TABLE) do |row|
-            row << { version: __FILE__ }
+          def add_version
+            connection.insert_rows(MIGRATION_TABLE) do |row|
+              row << { version: __FILE__ }
+            end
           end
-        end
 
-        def self.create_table(table_name, &block)
-          Clickhouse.connection.create_table(table_name, &block)
-        end
+          def table_exists?(table_name)
+            connection.execute("EXISTS TABLE #{table_name}").strip == '1'
+          end
 
-        def self.fetch_table(table_name, &block)
-          return if Clickhouse.connection.exists_table(table_name)
+          def soft_create_table(table_name, &block)
+            return if table_exists?(table_name)
 
-          Clickhouse.connection.create_table(table_name, &block)
-        end
+            create_table(table_name, &block)
+          end
 
-        def self.alter_table(table_name)
-          @table_info = Clickhouse.connection.describe_table(table_name)
-          @table_name = table_name
+          def soft_drop_table(table_name)
+            return unless table_exists?(table_name)
 
-          yield(table_name)
-        end
+            drop_table(table_name)
+          end
 
-        def self.fetch_column(column, type)
-          return if @table_info.find{|c_info| c_info.first == column.to_s}
+          delegate :create_table, to: :connection
+          delegate :drop_table, to: :connection
 
-          type = type.to_s
-                  .gsub(/(^.|_\w)/) {
-                    $1.upcase
-                  }
-                  .gsub("Uint", "UInt")
-                  .delete("_")
+          def alter_table(table_name)
+            @table_info = connection.describe_table(table_name)
+            @table_name = table_name
 
-          Clickhouse.connection.execute("ALTER TABLE #{@table_name} ADD COLUMN #{column} #{type}")
+            yield(table_name)
+          end
+
+          def fetch_column(column, type)
+            return if @table_info.find{|c_info| c_info.first == column.to_s}
+
+            type = type.to_s
+                    .gsub(/(^.|_\w)/) {
+                      $1.upcase
+                    }
+                    .gsub("Uint", "UInt")
+                    .delete("_")
+
+            connection.execute("ALTER TABLE #{@table_name} ADD COLUMN #{column} #{type}")
+          end
+
+          def connection
+            Clickhouse.connection
+          end
         end
       end
     end

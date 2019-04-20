@@ -1,0 +1,54 @@
+require_relative '../rails_helper'
+require_relative '../../lib/clickhouse/rails/migrations/base'
+
+RSpec.describe Clickhouse::Rails::Migrations::Base do
+  describe '.run_up' do
+    subject(:run_up) { described_class.run_up }
+
+    include_context 'with init migration' do
+      it 'executes up and add version' do
+        expect(Init).to receive(:up)
+        expect(Init).to receive(:add_version)
+
+        subject
+      end
+    end
+  end
+
+  describe '.create_table' do
+    subject(:create_table) { described_class.create_table(table_name, &block) }
+
+    let(:config_file) { file_fixture('clickhouse.yml') }
+    let(:table_name) { 'example' }
+    let(:block) do
+      -> (t) do
+        t.string 'field'
+
+        t.engine 'File(TabSeparated)'
+      end
+    end
+
+    before do
+      Clickhouse::Rails.config(config_file.realpath.to_s)
+      Clickhouse::Rails.init!
+      described_class.soft_drop_table(table_name)
+    end
+
+    it 'adds table to clickhouse' do
+      create_table
+
+      expect(described_class).to be_table_exists(table_name)
+    end
+  end
+
+  describe '.add_version' do
+    include_context 'with init migration'
+    subject(:add_version) { described_class.add_version }
+
+    it 'executes up and add version' do
+      subject
+
+      expect(Clickhouse.connection.count(from: migration_table)).to eq(1)
+    end
+  end
+end

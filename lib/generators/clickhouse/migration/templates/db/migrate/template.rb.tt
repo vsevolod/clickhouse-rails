@@ -1,0 +1,4 @@
+class <%= migration_class_name %> < Clickhouse::Rails::Migrations::Base
+  def self.up
+  end
+end

@@ -11,9 +11,12 @@ module Clickhouse
       end
 
       def copy_install_files
-        copy_file 'config/clickhouse.yml', 'config/clickhouse.yml'
-        directory 'db/clickhouse/migrate'
-        copy_file 'db/clickhouse/migrate/001_init.rb', 'db/clickhouse/migrate/001_init.rb'
+        copy_file 'config/clickhouse.yml'
+        directory db_migrate_path
+      end
+
+      def db_migrate_path
+        'db/clickhouse/migrate'
       end
     end
   end

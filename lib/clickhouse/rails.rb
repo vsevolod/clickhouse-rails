@@ -1,10 +1,14 @@
-require 'rails/railtie'
+require 'rails'
 require 'clickhouse/rails/config'
 
 module Clickhouse
   module Rails
-    def self.config
-      @configuration ||= Clickhouse::Rails::Config.init
+    def self.init!
+      Clickhouse.establish_connection(config)
+    end
+
+    def self.config(config_path = nil)
+      @configuration ||= Clickhouse::Rails::Config.init(config_path)
     end
 
     class Railtie < ::Rails::Railtie
@@ -17,7 +21,11 @@ module Clickhouse
       end
 
       rake_tasks do
-        load 'tasks/clickhouse/migrate'
+        load 'tasks/clickhouse/db/migrate.rake'
+      end
+
+      config.to_prepare do
+        Clickhouse::Rails.init!
       end
     end
   end
