@@ -12,6 +12,18 @@ RSpec.describe Clickhouse::Rails::Migrations::Base do
 
         subject
       end
+
+      context 'when two Init in @migrations_list' do
+        before do
+          described_class.migrations_list << Init
+        end
+
+        it 'skips the second time' do
+          expect(Init).to receive(:up).once
+
+          subject
+        end
+      end
     end
   end
 
@@ -43,10 +55,9 @@ RSpec.describe Clickhouse::Rails::Migrations::Base do
 
   describe '.add_version' do
     include_context 'with init migration'
-    subject(:add_version) { described_class.add_version }
 
     it 'executes up and add version' do
-      subject
+      described_class.add_version
 
       expect(Clickhouse.connection.count(from: migration_table)).to eq(1)
     end

@@ -16,16 +16,27 @@ module Clickhouse
             return unless @migrations_list
 
             @migrations_list.each do |migration|
+              next if migration.passed?
+
               migration.up
               migration.add_version
             end
+          end
+
+          def passed?
+            return false unless table_exists?(MIGRATION_TABLE)
+
+            @rows ||= connection.select_row(select: 'version', from: MIGRATION_TABLE)
+            @rows.include?(name)
+          rescue Clickhouse::QueryError
+            false
           end
 
           def up; end
 
           def add_version
             connection.insert_rows(MIGRATION_TABLE) do |row|
-              row << { version: __FILE__ }
+              row << { version: name }
             end
           end
 
