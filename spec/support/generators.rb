@@ -3,7 +3,7 @@ module Clickhouse
     module Generators
       module Macros
         def set_default_destination
-          destination File.expand_path('../../../tmp', __FILE__)
+          destination File.expand_path('../../tmp', __dir__)
         end
 
         def setup_default_destination

@@ -33,7 +33,7 @@ RSpec.describe Clickhouse::Rails::Migrations::Base do
     let(:config_file) { file_fixture('clickhouse.yml') }
     let(:table_name) { 'example' }
     let(:block) do
-      -> (t) do
+      lambda do |t|
         t.string 'field'
 
         t.engine 'File(TabSeparated)'

@@ -1,0 +1,14 @@
+Metrics/BlockLength:
+  Max: 25
+  Exclude:
+    - './spec/**/*_spec.rb'
+
+Naming/FileName:
+  Exclude:
+    - 'lib/clickhouse-rails.rb'
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 97

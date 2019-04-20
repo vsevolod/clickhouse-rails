@@ -5,7 +5,7 @@ namespace :clickhouse do
   namespace :db do
     desc 'Migrate clickhouse migrations'
     task :migrate do
-      path_to_migrations = "./db/clickhouse/migrate/*.rb"
+      path_to_migrations = './db/clickhouse/migrate/*.rb'
       Dir[path_to_migrations].sort.each { |file| require file }
 
       Clickhouse::Rails::Migrations::Base.run_up

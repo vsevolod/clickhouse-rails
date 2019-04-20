@@ -67,14 +67,14 @@ module Clickhouse
           end
 
           def fetch_column(column, type)
-            return if @table_info.find{|c_info| c_info.first == column.to_s}
+            return if @table_info.find { |c_info| c_info.first == column.to_s }
 
             type = type.to_s
-                    .gsub(/(^.|_\w)/) {
-                      $1.upcase
-                    }
-                    .gsub("Uint", "UInt")
-                    .delete("_")
+                       .gsub(/(^.|_\w)/) do
+              Regexp.last_match(1).upcase
+            end
+                       .gsub('Uint', 'UInt')
+                       .delete('_')
 
             connection.execute("ALTER TABLE #{@table_name} ADD COLUMN #{column} #{type}")
           end

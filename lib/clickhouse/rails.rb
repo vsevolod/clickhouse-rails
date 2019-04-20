@@ -8,11 +8,16 @@ module Clickhouse
     end
 
     def self.config(config_path = nil)
-      @configuration ||= Clickhouse::Rails::Config.init(config_path)
+      @config ||= Clickhouse::Rails::Config.init(config_path)
     end
 
     class Railtie < ::Rails::Railtie
-      generators = config.respond_to?(:app_generators) ? config.app_generators : config.generators
+      generators =
+        if config.respond_to?(:app_generators)
+          config.app_generators
+        else
+          config.generators
+        end
       generators.integration_tool :clickhouse
       generators.test_framework :clickhouse
 
