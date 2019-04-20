@@ -7,3 +7,4 @@ require 'ammeter/init'
 
 require_relative '../lib/clickhouse-rails'
 require_relative 'support/generators'
+require_relative 'support/rake'

@@ -15,6 +15,10 @@ module Clickhouse
       generators do
         require 'generators/clickhouse/install/install_generator'
       end
+
+      rake_tasks do
+        load 'tasks/clickhouse/migrate'
+      end
     end
   end
 end
