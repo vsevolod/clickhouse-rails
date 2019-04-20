@@ -1,5 +1,11 @@
 ENV['RAILS_ENV'] ||= 'test'
 
+require 'simplecov'
+SimpleCov.start
+
+require 'codecov'
+SimpleCov.formatter = SimpleCov::Formatter::Codecov
+
 require 'rails'
 require 'action_view/railtie'
 require 'action_controller/railtie'

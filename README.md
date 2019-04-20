@@ -1,5 +1,8 @@
 # Clickhouse rails
 
+[![Build Status](https://travis-ci.com/vsevolod/clickhouse-rails.svg?branch=master)](https://travis-ci.com/vsevolod/clickhouse-rails)
+[![codecov](https://codecov.io/gh/vsevolod/clickhouse-rails/branch/master/graph/badge.svg)](https://codecov.io/gh/vsevolod/clickhouse-rails)
+
 ## Install
 
 1. Add to Gemfile
@@ -47,6 +50,6 @@ end
 
 ## Additional clickhouse links
 
-[Base gem](https://github.com/archan937/clickhouse)
-[List of data types](https://clickhouse.yandex/docs/en/data_types/)
-[Table engines](https://clickhouse.yandex/docs/en/operations/table_engines/)
+- [Base gem](https://github.com/archan937/clickhouse)
+- [List of data types](https://clickhouse.yandex/docs/en/data_types/)
+- [Table engines](https://clickhouse.yandex/docs/en/operations/table_engines/)
