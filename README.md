@@ -19,12 +19,34 @@ $ rails g clickhouse:install
 
 4. Change clickhouse.yml at `config/clickhouse.yml` path
 
-5. Create database
+5. Create migrations
 ```bash
-$ rake clickhouse:db:create
+$ rails g clickhouse:migration add_tmp_table
+      create  db/clickhouse/migrate/002_add_tmp_table.rb
 ```
+
+6. Edit file like this:
+```ruby
+# db/clickhouse/migrate/002_add_tmp_table.rb
+class AddTmpTable < Clickhouse::Rails::Migrations::Base
+  def self.up
+    create_table :tmp do |t|
+      t.date   :date
+      t.uint16 :id
+
+      t.engine "MergeTree(date, (date), 8192)"
+    end
+  end
+end
+```
+
+## TODO:
+
+1. Rollback migrations
+2. Alter table
 
 ## Additional clickhouse links
 
 [Base gem](https://github.com/archan937/clickhouse)
 [List of data types](https://clickhouse.yandex/docs/en/data_types/)
+[Table engines](https://clickhouse.yandex/docs/en/operations/table_engines/)
