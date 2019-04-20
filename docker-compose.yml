@@ -8,7 +8,7 @@ services:
       - "CLICKHOUSE_HOSTS=clickhouse:8123"
       - "CLICKHOUSE_USER=default"
       - "CLICKHOUSE_ENV=test"
-    command: tail -f /dev/null
+    command: bash -c "bundle install && rspec"
     volumes:
       - ./:/app
     links:
