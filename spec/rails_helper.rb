@@ -5,7 +5,6 @@ SimpleCov.start
 
 require 'codecov'
 SimpleCov.formatter = SimpleCov::Formatter::Codecov
-
 require 'rails'
 require 'action_view/railtie'
 require 'action_controller/railtie'
@@ -16,3 +15,6 @@ require 'ammeter/init'
 require_relative '../lib/clickhouse-rails'
 require_relative 'support/generators'
 require_relative 'support/init'
+require_relative 'support/migration'
+
+Rails.logger = Logger.new('/dev/null')

@@ -68,29 +68,31 @@ module Clickhouse
           def fetch_column(column, type)
             return if @table_info.find { |c_info| c_info.first == column.to_s }
 
-            type = type.to_s
-                       .gsub(/(^.|_\w)/) do
+            type = type.to_s.gsub(/(^.|_\w)/) do
               Regexp.last_match(1).upcase
             end
-                       .gsub('Uint', 'UInt')
-                       .delete('_')
+            type = type.gsub('Uint', 'UInt').delete('_')
 
             connection.execute("ALTER TABLE #{@table_name} ADD COLUMN #{column} #{type}")
           end
 
           def run_migration(migration)
-            puts "# >========== #{migration.name} ==========="
+            logger.info "# >========== #{migration.name} ==========="
             migration.up
             migration.add_version
           rescue Clickhouse::QueryError => e
-            puts "# Error #{e.class}:"
-            puts "#  #{e.message}"
+            logger.info "# Error #{e.class}:"
+            logger.info "#  #{e.message}"
           ensure
-            puts "# <========== #{migration.name} ===========\n\n"
+            logger.info "# <========== #{migration.name} ===========\n\n"
           end
 
           def connection
             Clickhouse.connection
+          end
+
+          def logger
+            ::Rails.logger
           end
         end
       end
