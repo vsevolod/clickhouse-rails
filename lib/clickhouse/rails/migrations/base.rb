@@ -18,15 +18,14 @@ module Clickhouse
             @migrations_list.each do |migration|
               next if migration.passed?
 
-              migration.up
-              migration.add_version
+              run_migration(migration)
             end
           end
 
           def passed?
             return false unless table_exists?(MIGRATION_TABLE)
 
-            @rows ||= connection.select_row(select: 'version', from: MIGRATION_TABLE)
+            @rows ||= connection.select_rows(select: 'version', from: MIGRATION_TABLE).flatten
             @rows.include?(name)
           rescue Clickhouse::QueryError
             false
@@ -35,8 +34,8 @@ module Clickhouse
           def up; end
 
           def add_version
-            connection.insert_rows(MIGRATION_TABLE) do |row|
-              row << { version: name }
+            connection.insert_rows(MIGRATION_TABLE, names: ['version']) do |row|
+              row << [name]
             end
           end
 
@@ -77,6 +76,17 @@ module Clickhouse
                        .delete('_')
 
             connection.execute("ALTER TABLE #{@table_name} ADD COLUMN #{column} #{type}")
+          end
+
+          def run_migration(migration)
+            puts "# >========== #{migration.name} ==========="
+            migration.up
+            migration.add_version
+          rescue Clickhouse::QueryError => e
+            puts "# Error #{e.class}:"
+            puts "#  #{e.message}"
+          ensure
+            puts "# <========== #{migration.name} ===========\n\n"
           end
 
           def connection
