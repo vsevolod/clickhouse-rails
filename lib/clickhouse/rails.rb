@@ -4,7 +4,7 @@ require 'clickhouse/rails/config'
 module Clickhouse
   module Rails
     def self.init!
-      Clickhouse.establish_connection(config)
+      config && Clickhouse.establish_connection(config)
     end
 
     def self.config(config_path = nil)
