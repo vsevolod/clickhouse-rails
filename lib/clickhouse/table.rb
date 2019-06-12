@@ -11,9 +11,20 @@ module Clickhouse
         @table_name ||= to_s.tableize
       end
 
-      def insert_rows(rows)
+      def insert_row(row)
+        return if row.nil?
+
+        connection.insert_rows(table_name) do
+          complete_row = prepare_row(block_given? ? yield(row) : row)
+
+          [complete_row]
+        end
+      end
+      alias :create :insert_row
+
+      def insert_rows(batch_rows)
         connection.insert_rows(table_name) do |table_rows|
-          rows.each do |row|
+          batch_rows.each do |row|
             next if row.nil?
 
             complete_row = prepare_row(block_given? ? yield(row) : row)

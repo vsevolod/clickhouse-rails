@@ -21,6 +21,17 @@ describe Clickhouse::Table do
     end
   end
 
+  describe '#insert_row' do
+    let(:inserted_rows) { CustomTable.rows.to_a }
+    let(:row) { { 'field' => 'a' } }
+
+    it 'add the row' do
+      CustomTable.insert_row(row)
+
+      expect(inserted_rows).to eq([['a']])
+    end
+  end
+
   describe '#insert_rows' do
     let(:inserted_rows) { CustomTable.rows.to_a }
 
