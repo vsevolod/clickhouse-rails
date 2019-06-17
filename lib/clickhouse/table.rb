@@ -20,7 +20,7 @@ module Clickhouse
           [complete_row]
         end
       end
-      alias :create :insert_row
+      alias create insert_row
 
       def insert_rows(batch_rows)
         connection.insert_rows(table_name) do |table_rows|

@@ -1,3 +1,6 @@
+AllCops:
+  TargetRubyVersion: 2.5
+
 Metrics/BlockLength:
   Max: 25
   Exclude:
@@ -12,3 +15,6 @@ Style/Documentation:
 
 Metrics/LineLength:
   Max: 97
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
