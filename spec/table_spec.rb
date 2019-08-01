@@ -45,16 +45,6 @@ describe Clickhouse::Table do
       end
     end
 
-    context 'when row is an array' do
-      # TODO: implement array logic
-      let(:rows) { [['a'], ['2']] }
-
-      it 'raises an error' do
-        expect { CustomTable.insert_rows(rows) }
-          .to raise_error(Clickhouse::Table::WrongTypeRowError)
-      end
-    end
-
     context 'when row has empty attributes' do
       let(:rows) { [{}] }
 
@@ -62,6 +52,27 @@ describe Clickhouse::Table do
         CustomTable.insert_rows(rows)
 
         expect(inserted_rows).to eq([['']])
+      end
+    end
+  end
+
+  describe '#prepare_row' do
+    subject(:method) { CustomTable.prepare_row(row) }
+
+    context 'when row has wrong type' do
+      # TODO: implement array logic
+      let(:row) { ['a'] }
+
+      it 'raises an error' do
+        expect { method }.to raise_error(Clickhouse::Table::WrongTypeRowError)
+      end
+    end
+
+    context 'when row has extra fields' do
+      let(:row) { { 'field' => 'a', 'extra_field' => 'b' } }
+
+      it 'leaves only existing fields' do
+        is_expected.to eq('field' => 'a')
       end
     end
   end

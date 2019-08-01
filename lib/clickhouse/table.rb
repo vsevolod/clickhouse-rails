@@ -64,13 +64,37 @@ module Clickhouse
       end
 
       def prepare_row(row)
-        return empty_row.merge(row.stringify_keys) if row.is_a?(Hash)
+        validate_row(row)
 
-        raise WrongTypeRowError, "#{row.inspect} has wrong type"
+        row.stringify_keys!
+        crop_row(row)
+
+        empty_row.merge(row)
       end
 
       def connection
         ::Clickhouse.connection
+      end
+
+      def logger
+        ::Rails.logger
+      end
+
+      private
+
+      def validate_row(row)
+        return if row.is_a?(Hash)
+
+        raise WrongTypeRowError, "#{row.inspect} has wrong type"
+      end
+
+      def crop_row(row)
+        undefined_columns = row.keys - empty_row.keys
+
+        return if undefined_columns.empty?
+
+        logger.warn("Clickhouse: Undefined columns for #{table_name}: #{undefined_columns}")
+        row.except!(*undefined_columns)
       end
     end
   end

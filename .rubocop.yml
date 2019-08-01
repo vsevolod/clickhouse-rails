@@ -1,5 +1,7 @@
 AllCops:
   TargetRubyVersion: 2.5
+  Exclude:
+    - './tmp/**/*.rb'
 
 Metrics/BlockLength:
   Max: 25
