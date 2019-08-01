@@ -55,8 +55,15 @@ module Clickhouse
             drop_table(table_name)
           end
 
-          delegate :create_table, to: :connection
-          delegate :drop_table, to: :connection
+          def create_table(table_name, &block)
+            logger.info "# >======= Create #{table_name} ========"
+            connection.create_table(table_name, &block)
+          end
+
+          def drop_table(table_name, &block)
+            logger.info "# >======= Drop #{table_name} ========"
+            connection.drop_table(table_name, &block)
+          end
 
           def alter_table(table_name)
             @table_info = connection.describe_table(table_name)
@@ -73,7 +80,9 @@ module Clickhouse
             end
             type = type.gsub('Uint', 'UInt').delete('_')
 
-            connection.execute("ALTER TABLE #{@table_name} ADD COLUMN #{column} #{type}")
+            query = "ALTER TABLE #{@table_name} ADD COLUMN #{column} #{type}"
+            logger.info(query)
+            connection.execute(query)
           end
 
           def run_migration(migration)
@@ -92,7 +101,7 @@ module Clickhouse
           end
 
           def logger
-            ::Rails.logger
+            Logger.new(STDOUT)
           end
         end
       end
