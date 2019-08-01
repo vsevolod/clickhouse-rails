@@ -23,9 +23,10 @@ module Clickhouse
 
       def self.config_mapper(source)
         return nil if source.nil?
+        return nil if source['hosts'].nil?
 
         {
-          urls: source['hosts']&.split(','),
+          urls: source['hosts'].split(','),
           username: source['username'],
           password: source['password']
         }
