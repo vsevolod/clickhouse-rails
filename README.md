@@ -51,11 +51,24 @@ $ rake clickhouse:db:migrate
 ```
 
 You can create class of clickhouse table:
-```
+```ruby
 # app/models/custom_table.rb
 class CustomTable
   include Clickhouse::Table
 end
+```
+
+And insert rows like this:
+```ruby
+CustomTable.insert_rows([{a:1, b:2}])
+CustomTable.insert_row({a:1, b:2})
+```
+
+Alter table migration
+```ruby
+  alter_table "analytics_table" do
+    fetch_column :new_ids, :uint8 # Adds column new_ids or skip it
+  end
 ```
 
 ## TODO:
