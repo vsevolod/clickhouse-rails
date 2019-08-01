@@ -53,6 +53,34 @@ RSpec.describe Clickhouse::Rails::Migrations::Base do
     end
   end
 
+  describe '.alter_table' do
+    let(:table_name) { 'custom_table' }
+    subject(:alter_table) { described_class.alter_table(table_name, &block) }
+    # let(:block) { lambda { fetch_column :new_ids, :uint8 } }
+    let(:block) do
+      proc do
+        described_class.fetch_column :new_ids, :uint8
+      end
+    end
+
+    before do
+      with_table table_name do |t|
+        t.date 'date'
+
+        t.engine 'MergeTree(date, date, 8192)'
+      end
+    end
+
+    it 'adds column to existing table' do
+      alter_table
+      columns = described_class.connection.describe_table(table_name)
+      expect(columns).to eq([
+                              ['date', 'Date', '', '', '', ''],
+                              ['new_ids', 'UInt8', '', '', '', '']
+                            ])
+    end
+  end
+
   describe '.add_version' do
     include_context 'with init migration'
 
